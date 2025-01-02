@@ -334,14 +334,23 @@ int	calc_len(char *s)
 	int	    l;
 	int	    save;
 	char	keep;
-
+    static int i = 0;
 	l = 0;
+        // printf("l??  %s\n", s);
+
+    // printf("START START CALC LEN\n----------------------------\n");
+    // printf("we are workin in %s\n", s);
 	while (*s)
 	{
 		if (*s == 34 || *s == 39)
 		{
 			keep = *s;
-			save = check_next_quote(s++, keep);
+            // printf("Kepp is actualy [%c]\n", keep);
+            // printf("the [%c] is the s\n", *(s+1));
+			save = check_next_quote(s, keep);
+            // printf("the s is [%s] and the save -> [%d]\n", s, save);
+            if (save == -1)
+                return (-1);
 			s += save + 1;
 			l += save;
 		}
@@ -350,7 +359,12 @@ int	calc_len(char *s)
 		    s++;
 		    l++;
         }
+    // printf("--> %s\n", s);
 	}
+    // printf(" gonna return [%d] time\n", i);
+    i++;
+        // printf("END END CALC LEN\n----------------------------\n");
+    // printf("lllllllll [%d]\n", l);
 	return (l);
 }
 char	*new_cmd(char *s, int *flg)
@@ -359,7 +373,7 @@ char	*new_cmd(char *s, int *flg)
 	char	*save;
 	int	l;
 	char	keep;
-
+            
 	new = malloc(sizeof(char) * (calc_len(s) + 1));
 	if (!new)
 	{
@@ -372,6 +386,8 @@ char	*new_cmd(char *s, int *flg)
 	{
 		if (*s == 34 || *s == 39)
 		{
+            // printf("EEEEEEEEEEEEEEEEE\n");
+            // exit(0);
 			keep = *s++;
 			should_expnd(flg);
 			while (*s != keep)
@@ -391,9 +407,12 @@ void	delete_quotes(char **args)
 	while (*args)
 	{
 		str = new_cmd(*args, NULL);
+        if(!str)
+            return;
 		*args = str;
 		args++;
 	}
+
 }
 char **parsing_cmd(char *str)
 {
@@ -413,6 +432,7 @@ char **parsing_cmd(char *str)
     if(!cmd)
         return(NULL);
     return_cmd = fill_command(str, len, &i, 0);
+    
     delete_quotes(return_cmd);
     return(return_cmd);
 }
